@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+		
+<mapper namespace="UserMapper">
+	<resultMap id="userSelectMap" type="UserVO">
+		<result property="uid" column="uid" jdbcType="VARCHAR"/>
+		<result property="pw" column="pw" jdbcType="VARCHAR"/>
+		<result property="name" column="name" jdbcType="VARCHAR"/>
+		<result property="role" column="ROLE" jdbcType="VARCHAR"/>
+		
+		<result property="common_no" column="COMMON_NO" jdbcType="INTEGER"/>
+			
+<!-- 		<association property="common_no" javaType="CommonVO">
+			<id property="common_no" column="COMMON_NO" jdbcType="INTEGER"/>
+ 			<result property="role" column="ROLE" jdbcType="VARCHAR"/> 
+		</association> -->
+	</resultMap>
+	
+	<resultMap id="CommonSelectMap" type="CommonVO">
+	
+	</resultMap>
+	<select id="login" resultType="UserVO">
+		select uid,pw,name
+		from users
+		where uid=#{uid}
+		and pw=#{pw}
+	</select>
+		<update id="keepLogin">
+		update tbl_user set sessionKey = #{sesisonId},sessionLimit = #{next}
+		where uid=#{uid}
+	</update>
+	<select id="checkUserWithSessionKey" resultType="UserVO">
+		select *
+		from tbl_user
+		where sessionKey=#{value}
+		and sessionlimit > now()
+	</select>
+	
+	<select id="listUser" resultMap="userSelectMap">
+		SELECT C.COMMON_NO, C.ROLE, U.uid, U.pw, U.name 
+		FROM users AS U INNER JOIN COMMON AS C
+		ON U.ROLE = C.ROLE
+		ORDER BY COMMON_NO ASC
+	</select>
+	
+	
+</mapper>
